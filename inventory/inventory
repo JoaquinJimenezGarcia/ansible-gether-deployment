@@ -1,0 +1,1 @@
+localhost ansible_python_interpreter=/usr/bin/python3 ansible_connection=local geth_rpc_port=8545 geth_rpc_prefix=/network geth_container_backupdir=/home/vagrant/ethereum-data/ user_name=vagrant

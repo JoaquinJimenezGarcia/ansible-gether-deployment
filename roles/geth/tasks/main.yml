@@ -1,0 +1,40 @@
+---
+- name: Create {{ geth_container_backupdir }} for backup
+  file:
+    path: "{{ geth_container_backupdir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Gether container
+  docker_container:
+    name: ethereum-node
+    image: ethereum/client-go:stable
+    command: "--http --http.addr 0.0.0.0 --http.api \"db, eth, net, web3, personal\" --http.rpcprefix {{ geth_rpc_prefix }}  --http.vhosts \"*\" --http.corsdomain \"*\" --maxpeers=100"
+    state: started
+    ports:
+     - "{{ geth_rpc_port }}:8545"
+     - "30303:30303"
+     - "8551:8551"
+    volumes:
+     - "{{ geth_container_backupdir }}:/root"
+
+- name: Check service is up and running
+  uri:
+    url: "http://192.168.0.200"
+    method: POST
+    headers:
+      Content-Type: 'application/json'
+    body_format: raw
+    body: '{
+        "jsonrpc":"2.0",
+        "method":"web3_clientVersion",
+        "params":[],
+        "id":1}'
+    return_content: yes
+  register: this
+  failed_when: "'Geth' not in this.content"
+  until: this.status == 200
+  retries: 10
+  delay: 5

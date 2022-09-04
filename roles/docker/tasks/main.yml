@@ -1,0 +1,39 @@
+---
+- name: Create /etc/docker
+  file:
+    path: /etc/docker/
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Installing requirenments
+  apt:
+    name: python-apt
+    state: present
+
+- name: Updating cache
+  apt:
+    update_cache: yes
+
+- name: Install Docker
+  apt:
+    name: docker.io
+    state: present
+
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Add user to docker group
+  user:
+    name: "{{ user_name }}"
+    groups: docker
+    append: yes
+  
+- name: Docker restart
+  service:
+    name: docker
+    state: restarted

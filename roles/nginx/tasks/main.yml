@@ -1,0 +1,42 @@
+---
+- name: Create /etc/nginx
+  file:
+    path: /etc/nginx
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Installing requirenments
+  apt:
+    name: python-apt
+    state: present
+
+- name: Updating cache
+  apt:
+    update_cache: yes
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Copy Nginx basic configuration.
+  template:
+    src: default.config.j2
+    dest: "/etc/nginx/sites-available/default"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Nginx restart
+  service:
+    name: nginx
+    state: restarted
+
+- name: Ensure Nginx service is running
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+

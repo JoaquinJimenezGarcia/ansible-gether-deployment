@@ -1,0 +1,11 @@
+---
+# This playbook should provision/update the GETH node
+
+- name: Deploying the node
+  hosts: all
+  become: true
+
+  roles:
+    - { role: docker, tags: docker }
+    - { role: nginx, tags: nginx }
+    - { role: geth, tags: geth }
